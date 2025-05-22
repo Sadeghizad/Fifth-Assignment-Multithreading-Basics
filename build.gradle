@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     id 'java'
 }
@@ -8,12 +10,30 @@ version = '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+def javaFXPlatform = getJavaFXPlatform()
+def javaFXVersion = "15.0.1"
 
 dependencies {
+    // you need a dependency for each of the JavaFX modules you're going to use
+    implementation "org.openjfx:javafx-base:${javaFXVersion}:${javaFXPlatform}"
+    implementation "org.openjfx:javafx-controls:${javaFXVersion}:${javaFXPlatform}"
+    implementation "org.openjfx:javafx-graphics:${javaFXVersion}:${javaFXPlatform}"
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+
 test {
     useJUnitPlatform()
+}
+private static String getJavaFXPlatform() {
+    def currentOS = DefaultNativePlatform.currentOperatingSystem;
+    if (currentOS.isWindows()) {
+        return 'win'
+    } else if (currentOS.isLinux()) {
+        return 'linux'
+    } else if (currentOS.isMacOsX()) {
+        return 'mac'
+    }
+    return null
 }
